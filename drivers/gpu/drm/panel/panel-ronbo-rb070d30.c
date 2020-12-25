@@ -26,6 +26,8 @@
 #include <drm/drm_panel.h>
 #include <drm/drm_print.h>
 
+#define CONFIG_NOT_EXIT_EVEN_GPIO_ERROR
+
 struct rb070d30_panel {
 	struct drm_panel panel;
 	struct mipi_dsi_device *dsi;
@@ -57,9 +59,11 @@ static int rb070d30_panel_prepare(struct drm_panel *panel)
 	}
 
 	msleep(20);
-	gpiod_set_value(ctx->gpios.power, 1);
+	if (!IS_ERR(ctx->gpios.power))
+		gpiod_set_value(ctx->gpios.power, 1);
 	msleep(20);
-	gpiod_set_value(ctx->gpios.reset, 1);
+	if (!IS_ERR(ctx->gpios.reset))
+		gpiod_set_value(ctx->gpios.reset, 1);
 	msleep(20);
 	return 0;
 }
@@ -68,8 +72,10 @@ static int rb070d30_panel_unprepare(struct drm_panel *panel)
 {
 	struct rb070d30_panel *ctx = panel_to_rb070d30_panel(panel);
 
-	gpiod_set_value(ctx->gpios.reset, 0);
-	gpiod_set_value(ctx->gpios.power, 0);
+	if (!IS_ERR(ctx->gpios.reset))
+		gpiod_set_value(ctx->gpios.reset, 0);
+	if (!IS_ERR(ctx->gpios.power))
+		gpiod_set_value(ctx->gpios.power, 0);
 	regulator_disable(ctx->supply);
 
 	return 0;
@@ -178,42 +184,52 @@ static int rb070d30_panel_dsi_probe(struct mipi_dsi_device *dsi)
 	ctx->panel.funcs = &rb070d30_panel_funcs;
 
 	ctx->gpios.reset = devm_gpiod_get(&dsi->dev, "reset", GPIOD_OUT_LOW);
+#ifndef CONFIG_NOT_EXIT_EVEN_GPIO_ERROR
 	if (IS_ERR(ctx->gpios.reset)) {
 		DRM_DEV_ERROR(&dsi->dev, "Couldn't get our reset GPIO\n");
 		return PTR_ERR(ctx->gpios.reset);
 	}
+#endif
 
 	ctx->gpios.power = devm_gpiod_get(&dsi->dev, "power", GPIOD_OUT_LOW);
+#ifndef CONFIG_NOT_EXIT_EVEN_GPIO_ERROR
 	if (IS_ERR(ctx->gpios.power)) {
 		DRM_DEV_ERROR(&dsi->dev, "Couldn't get our power GPIO\n");
 		return PTR_ERR(ctx->gpios.power);
 	}
+#endif
 
 	/*
 	 * We don't change the state of that GPIO later on but we need
 	 * to force it into a low state.
 	 */
 	ctx->gpios.updn = devm_gpiod_get(&dsi->dev, "updn", GPIOD_OUT_LOW);
+#ifndef CONFIG_NOT_EXIT_EVEN_GPIO_ERROR
 	if (IS_ERR(ctx->gpios.updn)) {
 		DRM_DEV_ERROR(&dsi->dev, "Couldn't get our updn GPIO\n");
 		return PTR_ERR(ctx->gpios.updn);
 	}
+#endif
 
 	/*
 	 * We don't change the state of that GPIO later on but we need
 	 * to force it into a low state.
 	 */
 	ctx->gpios.shlr = devm_gpiod_get(&dsi->dev, "shlr", GPIOD_OUT_LOW);
+#ifndef CONFIG_NOT_EXIT_EVEN_GPIO_ERROR
 	if (IS_ERR(ctx->gpios.shlr)) {
 		DRM_DEV_ERROR(&dsi->dev, "Couldn't get our shlr GPIO\n");
 		return PTR_ERR(ctx->gpios.shlr);
 	}
+#endif
 
 	ctx->backlight = devm_of_find_backlight(&dsi->dev);
+#ifndef CONFIG_NOT_EXIT_EVEN_GPIO_ERROR
 	if (IS_ERR(ctx->backlight)) {
 		DRM_DEV_ERROR(&dsi->dev, "Couldn't get our backlight\n");
 		return PTR_ERR(ctx->backlight);
 	}
+#endif
 
 	ret = drm_panel_add(&ctx->panel);
 	if (ret < 0)

@@ -2265,6 +2265,13 @@ static int imx_uart_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+	if (sport->port.line == 3) {            /* uart4, used for M4 core */
+		if ((base = ioremap(0x303d0518, 4)) != NULL) {
+			__raw_writel(0xff, base);
+			iounmap(base);
+		}
+	}
+
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(base))
