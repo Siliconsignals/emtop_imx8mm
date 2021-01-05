@@ -17,11 +17,12 @@ build_arm64() {
 		make imx8mm_demo_defconfig
 		[ $? != 0 ] && exit 1
 	fi
+    corenum=`cat /proc/cpuinfo |grep processor |wc -l`
     if test ; then
-        make dtbs Image -j12
+        make dtbs Image -j$corenum
         [ $? != 0 ] && exit 1
     else
-        make dtbs Image modules -j12
+        make dtbs Image modules -j$corenum
         [ $? != 0 ] && exit 1
         make INSTALL_MOD_PATH=/dev/shm/ modules_install
     fi
