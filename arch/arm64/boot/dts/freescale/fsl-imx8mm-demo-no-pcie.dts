@@ -1,0 +1,6 @@
+
+#include "fsl-imx8mm-demo.dts"
+
+&pcie0 {
+	ext_osc = <0>;
+};

@@ -191,4 +191,12 @@ config DRM_ITE_IT6263
 	---help---
 	  ITE IT6263 bridge chip driver.
 
+config DRM_LONTIUM_LT8912
+	tristate "Lontium LT8912 MIPI-DSI to LVDS and HDMI bridge"
+	depends on OF
+	select DRM_KMS_HELPER
+	select REGMAP_I2C
+	help
+	  Lontium LT8912 MIPI-DSI to LVDS and HDMI bridge chip driver.
+
 endmenu

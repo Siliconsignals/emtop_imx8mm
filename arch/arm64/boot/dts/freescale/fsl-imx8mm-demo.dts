@@ -165,7 +165,7 @@
 	};
 };
 
-&pcie0{
+&pcie0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
 	clkreq-gpio = <&gpio3 24 GPIO_ACTIVE_LOW>;
@@ -511,6 +511,86 @@
 	};
 };
 
+&i2c4 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c4>;
+	status = "okay";
+
+	hdmi_bridge: lt8912b@48 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "lontium,lt8912";
+		reg = <0x48>;
+		lontium,dsi-lanes = <4>;
+		vdd1-supply = <&dummy_reg>;
+		no-hpd;
+		no-edid;
+		status = "okay";
+
+		port {
+			lt8912_1_in: endpoint {
+				remote-endpoint = <&mipi_dsi_hdmi_out>;
+			};
+		};
+
+		display-timings {
+			native-mode = <&timing0>;
+
+			/* 1920 * 1080 MIPI */
+			timing0: timing0 {
+				clock-frequency = <148500000>;
+				hactive = <1920>;
+				vactive = <1080>;
+				hfront-porch = <88>;
+				hsync-len = <44>;
+				hback-porch = <148>;
+				vfront-porch = <36>;
+				vsync-len = <5>;
+				vback-porch = <4>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				de-active = <0>;
+				pixelclk-active = <0>;
+			};
+
+			/* 1280 * 720 MIPI */
+			timing1: timing1 {
+				clock-frequency = <74250000>;
+				hactive = <1280>;
+				vactive = <720>;
+				hfront-porch = <110>;
+				hsync-len = <40>;
+				hback-porch = <220>;
+				vfront-porch = <5>;
+				vsync-len = <5>;
+				vback-porch = <20>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				de-active = <0>;
+				pixelclk-active = <0>;
+			};
+
+			/* 1280 * 800 MIPI */
+			timing2: timing2 {
+				clock-frequency = <71000000>;
+				hactive = <1280>;
+				vactive = <800>;
+				hfront-porch = <48>;
+				hsync-len = <32>;
+				hback-porch = <80>;
+				vfront-porch = <3>;
+				vsync-len = <6>;
+				vback-porch = <14>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				de-active = <0>;
+				pixelclk-active = <0>;
+			};
+		};
+	};
+};
+
 &iomuxc {
 	pinctrl-names = "default";
 
@@ -593,6 +673,13 @@
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C3_SCL_I2C3_SCL				0x400001c3
 			MX8MM_IOMUXC_I2C3_SDA_I2C3_SDA				0x400001c3
+		>;
+	};
+
+	pinctrl_i2c4: i2c4grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C4_SCL_I2C4_SCL				0x400001c3
+			MX8MM_IOMUXC_I2C4_SDA_I2C4_SDA				0x400001c3
 		>;
 	};
 
@@ -824,7 +911,14 @@
 		reg = <0>;
 		vcc-lcd-supply = <&dummy_reg>;
 		backlight = <&backlight_pwm>;
-		status = "okay";
+		status = "disabled";
+	};
+
+	port@1 {
+		mipi_dsi_hdmi_out: endpoint {
+			remote-endpoint = <&lt8912_1_in>;
+			attach-bridge;
+		};
 	};
 };
 
