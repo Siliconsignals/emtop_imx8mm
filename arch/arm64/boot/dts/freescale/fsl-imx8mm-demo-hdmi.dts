@@ -526,7 +526,7 @@
 		vdd1-supply = <&dummy_reg>;
 		no-hpd;
 		no-edid;
-		status = "disabled";
+		status = "okay";
 
 		port {
 			lt8912_1_in: endpoint {
@@ -911,7 +911,7 @@
 		reg = <0>;
 		vcc-lcd-supply = <&dummy_reg>;
 		backlight = <&backlight_pwm>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	port@1 {
