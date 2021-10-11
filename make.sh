@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PATH=/home/chengpg/bin/arm/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin:$PATH
+export PATH=/root/bin/arm/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin:$PATH
 export ARCH=arm64
 export CROSS_COMPILE=arm-linux-
 
@@ -44,8 +44,8 @@ build_imx8mm() {
 }
 #------------------------------------------------------------------------------
 build_imx8mn() {
-	SRCDTB="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo.dtb"
-	DSTDTB="fsl-imx8mm-demo.dtb"
+	SRCDTB="arch/arm64/boot/dts/freescale/fsl-imx8mn-demo.dtb"
+	DSTDTB="fsl-imx8mn-demo.dtb"
 	SRCKER="arch/arm64/boot/Image"
 	DSTKER="Image"
 
