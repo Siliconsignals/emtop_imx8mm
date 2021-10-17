@@ -3613,6 +3613,8 @@ static int fec_reset_phy(struct platform_device *pdev)
 		return err;
 	}
 
+	gpio_set_value_cansleep(phy_reset, active_high);
+
 	if (msec > 20)
 		msleep(msec);
 	else

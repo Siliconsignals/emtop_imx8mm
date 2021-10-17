@@ -22,7 +22,7 @@ build_imx8mm() {
 		[ $? != 0 ] && exit 1
 	fi
     corenum=`cat /proc/cpuinfo |grep processor |wc -l`
-    if test ; then
+    if test 1; then
         make dtbs Image -j$corenum
         [ $? != 0 ] && exit 1
     else
