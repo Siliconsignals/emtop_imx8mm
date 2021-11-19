@@ -22,7 +22,7 @@ build_imx8mm() {
 		[ $? != 0 ] && exit 1
 	fi
     corenum=`cat /proc/cpuinfo |grep processor |wc -l`
-    if test 1; then
+    if test ; then
         make dtbs Image -j$corenum
         [ $? != 0 ] && exit 1
     else
@@ -72,6 +72,37 @@ build_imx8mn() {
 	done
 }
 
+#------------------------------------------------------------------------------
+build_imx8mp() {
+	SRCDTB="arch/arm64/boot/dts/freescale/imx8mp-rpi-cm4io.dtb"
+	DSTDTB="imx8mp-evk.dtb"
+	SRCKER="arch/arm64/boot/Image"
+	DSTKER="Image"
+
+	if ! [ -f ".config" ]; then
+		# make imx_v8_defconfig
+		make imx8mm_demo_defconfig
+		[ $? != 0 ] && exit 1
+	fi
+    corenum=`cat /proc/cpuinfo |grep processor |wc -l`
+    if test ; then
+        make dtbs Image -j$corenum
+        [ $? != 0 ] && exit 1
+    else
+        make dtbs Image modules -j$corenum
+        [ $? != 0 ] && exit 1
+        make INSTALL_MOD_PATH=/dev/shm/ modules_install
+    fi
+	for d in $DESTDIR; do
+		! [ -d "$d" ] && continue
+		echo "Info: COPY ${SRCDTB} -> ${d}/${DSTDTB}"
+		cp -f ${SRCDTB} ${d}/${DSTDTB}
+		echo "Info: COPY ${SRCKER} ->  ${d}/${DSTKER}"
+		cp -f ${SRCKER} ${d}/${DSTKER}
+	done
+}
+
 # main entry
-build_imx8mm
+# build_imx8mm
 # build_imx8mn
+build_imx8mp
