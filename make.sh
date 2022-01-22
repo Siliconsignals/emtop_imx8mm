@@ -74,8 +74,8 @@ build_imx8mn() {
 
 #------------------------------------------------------------------------------
 build_imx8mp() {
-	SRCDTB="arch/arm64/boot/dts/freescale/imx8mp-rpi-cm4io.dtb"
-	DSTDTB="imx8mp-evk.dtb"
+	SRCDTB="arch/arm64/boot/dts/freescale/emtop-imx8mp-cm4io.dtb"
+	DSTDTB="emtop-imx8mp-cm4io.dtb"
 	SRCKER="arch/arm64/boot/Image"
 	DSTKER="Image"
 
