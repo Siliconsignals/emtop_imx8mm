@@ -11,8 +11,10 @@ build_imx8mm() {
 	DSTDTB1="fsl-imx8mm-demo.dtb"
 	SRCDTB2="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo-hdmi.dtb"
 	DSTDTB2="fsl-imx8mm-demo-hdmi.dtb"
-	SRCDTB3="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo-no-pcie.dtb"
-	DSTDTB3="fsl-imx8mm-demo-no-pcie.dtb"
+	SRCDTB3="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo-lt8912-lvds.dtb"
+	DSTDTB3="fsl-imx8mm-demo-lt8912-lvds.dtb"
+	SRCDTB4="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo-no-pcie.dtb"
+	DSTDTB4="fsl-imx8mm-demo-no-pcie.dtb"
 	SRCKER="arch/arm64/boot/Image"
 	DSTKER="Image"
 
@@ -22,7 +24,7 @@ build_imx8mm() {
 		[ $? != 0 ] && exit 1
 	fi
     corenum=`cat /proc/cpuinfo |grep processor |wc -l`
-    if test ; then
+    if test 1; then
         make dtbs Image -j$corenum
         [ $? != 0 ] && exit 1
     else
@@ -38,6 +40,8 @@ build_imx8mm() {
 		cp -f ${SRCDTB2} ${d}/${DSTDTB2}
 		echo "Info: COPY ${SRCDTB3} -> ${d}/${DSTDTB3}"
 		cp -f ${SRCDTB3} ${d}/${DSTDTB3}
+		echo "Info: COPY ${SRCDTB4} -> ${d}/${DSTDTB4}"
+		cp -f ${SRCDTB3} ${d}/${DSTDTB4}
 		echo "Info: COPY ${SRCKER} ->  ${d}/${DSTKER}"
 		cp -f ${SRCKER} ${d}/${DSTKER}
 	done
@@ -103,6 +107,6 @@ build_imx8mp() {
 }
 
 # main entry
-# build_imx8mm
+build_imx8mm
 # build_imx8mn
-build_imx8mp
+# build_imx8mp

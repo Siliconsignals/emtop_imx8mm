@@ -58,7 +58,8 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mm-evk-ak4497.dtb imx8mm-evk-ak5558.dtb imx8mm-evk
 dtb-$(CONFIG_ARCH_MXC) += imx8mm-evk-8mic-revE.dtb imx8mm-evk-8mic-swpdm.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx8mm-ab2.dtb imx8mm-ab2-m4.dtb imx8mm-ddr4-ab2.dtb imx8mm-ddr4-ab2-m4.dtb \
 			  imx8mm-ddr4-ab2-revb.dtb imx8mm-ddr4-ab2-m4-revb.dtb \
-			  fsl-imx8mm-demo.dtb fsl-imx8mm-demo-hdmi.dtb fsl-imx8mm-demo-no-pcie.dtb
+			  fsl-imx8mm-demo.dtb fsl-imx8mm-demo-hdmi.dtb fsl-imx8mm-demo-no-pcie.dtb \
+			  fsl-imx8mm-demo-lt8912-lvds.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx8mn-evk.dtb imx8mn-evk-rm67191.dtb imx8mn-ddr4-evk.dtb imx8mn-ddr4-evk-ak5558.dtb \
 			  imx8mn-ddr4-evk-rm67191.dtb imx8mn-ddr4-evk-rpmsg.dtb imx8mn-ddr4-evk-usd-wifi.dtb \
 			  imx8mn-evk-ak5558.dtb imx8mn-evk-rpmsg.dtb imx8mn-evk-8mic-revE.dtb

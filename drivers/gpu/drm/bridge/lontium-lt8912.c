@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2018 Rockchip Electronics Co. Ltd.
+ *
+ * Updated by ShenZhen Emtop Tech. Jeffery @ 20220523
+ *	* Fix to Support LVDS output.
+ *
  */
 
 #include <linux/kernel.h>
@@ -93,11 +97,20 @@ static void lt8912_init(struct lt8912 *lt)
 	regmap_write(lt->regmap[0], 0x0a, 0xff);
 	regmap_write(lt->regmap[0], 0x0b, 0x7c);
 	regmap_write(lt->regmap[0], 0x0c, 0xff);
+	if (!lt->sink_is_hdmi) {
+		regmap_write(lt->regmap[0], 0x51, 0x15);
+	}
 
 	/* TxAnalog */
 	regmap_write(lt->regmap[0], 0x31, 0xa1);
-	regmap_write(lt->regmap[0], 0x32, 0xa1);
-	regmap_write(lt->regmap[0], 0x33, 0x03);
+	if (lt->sink_is_hdmi) {
+		regmap_write(lt->regmap[0], 0x32, 0xa1);
+		regmap_write(lt->regmap[0], 0x33, 0x03);
+	}
+	else {
+		regmap_write(lt->regmap[0], 0x32, 0xbf);
+		regmap_write(lt->regmap[0], 0x33, 0x17);
+	}
 	regmap_write(lt->regmap[0], 0x37, 0x00);
 	regmap_write(lt->regmap[0], 0x38, 0x22);
 	regmap_write(lt->regmap[0], 0x60, 0x82);
@@ -114,11 +127,21 @@ static void lt8912_init(struct lt8912 *lt)
 	regmap_write(lt->regmap[0], 0x5a, 0x02);
 
 	/* MIPIAnalog */
-	regmap_write(lt->regmap[0], 0x3e, 0xce);
-	regmap_write(lt->regmap[0], 0x3f, 0xd4);
-	regmap_write(lt->regmap[0], 0x41, 0x3c);
+	if (lt->sink_is_hdmi) {
+		regmap_write(lt->regmap[0], 0x3e, 0xce);
+		regmap_write(lt->regmap[0], 0x3f, 0xd4);
+		regmap_write(lt->regmap[0], 0x41, 0x3c);
+	}
+	else {
+		regmap_write(lt->regmap[0], 0x3e, 0xc6);
+		regmap_write(lt->regmap[0], 0x41, 0x7c);
+	}
 
 	/* MipiBasicSet */
+	if (!lt->sink_is_hdmi) {
+		regmap_write(lt->regmap[1], 0x10, 0x01);
+		regmap_write(lt->regmap[1], 0x11, 0x08);
+	}
 	regmap_write(lt->regmap[1], 0x12, 0x04);
 	regmap_write(lt->regmap[1], 0x13, lanes % 4);
 	regmap_write(lt->regmap[1], 0x14, 0x00);
@@ -128,13 +151,18 @@ static void lt8912_init(struct lt8912 *lt)
 	regmap_write(lt->regmap[1], 0x1b, 0x03);
 
 	/* MIPIDig */
-	regmap_write(lt->regmap[1], 0x10, 0x01);
-	regmap_write(lt->regmap[1], 0x11, 0x0a);
+	if (lt->sink_is_hdmi) {
+		regmap_write(lt->regmap[1], 0x10, 0x01);
+		regmap_write(lt->regmap[1], 0x11, 0x0a);
+	}
 	regmap_write(lt->regmap[1], 0x18, hsync);
 	regmap_write(lt->regmap[1], 0x19, vsync);
 	regmap_write(lt->regmap[1], 0x1c, hactive % 0x100);
 	regmap_write(lt->regmap[1], 0x1d, hactive >> 8);
 
+	if (!lt->sink_is_hdmi) {
+		regmap_write(lt->regmap[1], 0x1e, 0x67);
+	}
 	regmap_write(lt->regmap[1], 0x2f, 0x0c);
 
 	regmap_write(lt->regmap[1], 0x34, htotal % 0x100);
@@ -155,11 +183,18 @@ static void lt8912_init(struct lt8912 *lt)
 	regmap_write(lt->regmap[0], 0xab, reg);
 
 	/* DDSConfig */
-	regmap_write(lt->regmap[1], 0x4e, 0x6a);
-	regmap_write(lt->regmap[1], 0x4f, 0xad);
-	regmap_write(lt->regmap[1], 0x50, 0xf3);
+	if (lt->sink_is_hdmi) {
+		regmap_write(lt->regmap[1], 0x4e, 0x6a);
+		regmap_write(lt->regmap[1], 0x4f, 0xad);
+		regmap_write(lt->regmap[1], 0x50, 0xf3);
+	}
+	else {
+		regmap_write(lt->regmap[1], 0x4e, 0x52);
+		regmap_write(lt->regmap[1], 0x4f, 0xde);
+		regmap_write(lt->regmap[1], 0x50, 0xc0);
+		regmap_write(lt->regmap[1], 0x1e, 0x4f);
+	}
 	regmap_write(lt->regmap[1], 0x51, 0x80);
-
 	regmap_write(lt->regmap[1], 0x1f, 0x5e);
 	regmap_write(lt->regmap[1], 0x20, 0x01);
 	regmap_write(lt->regmap[1], 0x21, 0x2c);
@@ -217,10 +252,43 @@ static void lt8912_init(struct lt8912 *lt)
 	usleep_range(10000, 20000);
 	regmap_write(lt->regmap[0], 0x03, 0xff);
 
-	regmap_write(lt->regmap[1], 0x51, 0x80);
-	usleep_range(10000, 20000);
-	regmap_write(lt->regmap[1], 0x51, 0x00);
+	if (lt->sink_is_hdmi) {
+		regmap_write(lt->regmap[1], 0x51, 0x80);
+		usleep_range(10000, 20000);
+		regmap_write(lt->regmap[1], 0x51, 0x00);
+	}
+	else {
+		regmap_write(lt->regmap[0], 0x05, 0xfb);
+		usleep_range(10000, 20000);
+		regmap_write(lt->regmap[0], 0x05, 0xff);
 
+		/* LVDS bypass configure */
+		regmap_write(lt->regmap[0], 0x50, 0x24);
+		regmap_write(lt->regmap[0], 0x51, 0x2d);
+		regmap_write(lt->regmap[0], 0x52, 0x04);
+
+		/* PLL CLK */
+		regmap_write(lt->regmap[0], 0x69, 0x0e);
+		regmap_write(lt->regmap[0], 0x69, 0x8e);
+		regmap_write(lt->regmap[0], 0x6a, 0x00);
+		regmap_write(lt->regmap[0], 0x6c, 0xb8);
+		regmap_write(lt->regmap[0], 0x6b, 0x51);
+		regmap_write(lt->regmap[0], 0x04, 0xfb);	/* core pll reset */
+		regmap_write(lt->regmap[0], 0x04, 0xff);
+
+		/* scaler bypass */
+		regmap_write(lt->regmap[0], 0x7f, 0x00);
+		regmap_write(lt->regmap[0], 0xa8, 0x13);
+		usleep_range(100000, 160000);
+		regmap_write(lt->regmap[0], 0x02, 0xf7);	/* lvds pll reset */
+		regmap_write(lt->regmap[0], 0x02, 0xff);
+		regmap_write(lt->regmap[0], 0x03, 0xcb);
+		regmap_write(lt->regmap[0], 0x03, 0xfb);
+		regmap_write(lt->regmap[0], 0x03, 0xff);
+
+		/* Turn on LVDS output */
+		regmap_write(lt->regmap[0], 0x44, 0x30);
+	}
 }
 
 int lt8912_parse_dt(struct device_node *np, struct lt8912 *lt)
@@ -230,7 +298,7 @@ int lt8912_parse_dt(struct device_node *np, struct lt8912 *lt)
 
 	lt->no_hpd = of_property_read_bool(np, "no-hpd");
 	lt->no_edid = of_property_read_bool(np, "no-edid");
-
+	lt->sink_is_hdmi = !of_property_read_bool(np, "sink_is_lvds");
 	of_property_read_u32(np, "lontium,dsi-lanes", &num_lanes);
 
 	if (num_lanes < 1 || num_lanes > 4) {
@@ -350,10 +418,6 @@ static int lt8912_connector_get_modes(struct drm_connector *connector)
 	u32 bus_format = MEDIA_BUS_FMT_RGB888_1X24;
 	u32 bus_flags = 0;
 	int ret, num = 0;
-
-	/*
-	 * Output HDMI, not LVDS by default */
-	lt->sink_is_hdmi = 1;
 
 	if (lt->no_edid) {
 		mode = drm_mode_create(connector->dev);
