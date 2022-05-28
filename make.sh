@@ -13,8 +13,10 @@ build_imx8mm() {
 	DSTDTB2="fsl-imx8mm-demo-hdmi.dtb"
 	SRCDTB3="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo-lt8912-lvds.dtb"
 	DSTDTB3="fsl-imx8mm-demo-lt8912-lvds.dtb"
-	SRCDTB4="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo-no-pcie.dtb"
-	DSTDTB4="fsl-imx8mm-demo-no-pcie.dtb"
+	SRCDTB4="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo-vislcd-mipi.dtb"
+	DSTDTB4="fsl-imx8mm-demo-vislcd-mipi.dtb"
+	SRCDTB5="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo-no-pcie.dtb"
+	DSTDTB5="fsl-imx8mm-demo-no-pcie.dtb"
 	SRCKER="arch/arm64/boot/Image"
 	DSTKER="Image"
 
@@ -41,7 +43,9 @@ build_imx8mm() {
 		echo "Info: COPY ${SRCDTB3} -> ${d}/${DSTDTB3}"
 		cp -f ${SRCDTB3} ${d}/${DSTDTB3}
 		echo "Info: COPY ${SRCDTB4} -> ${d}/${DSTDTB4}"
-		cp -f ${SRCDTB3} ${d}/${DSTDTB4}
+		cp -f ${SRCDTB4} ${d}/${DSTDTB4}
+		echo "Info: COPY ${SRCDTB5} -> ${d}/${DSTDTB5}"
+		cp -f ${SRCDTB5} ${d}/${DSTDTB5}
 		echo "Info: COPY ${SRCKER} ->  ${d}/${DSTKER}"
 		cp -f ${SRCKER} ${d}/${DSTKER}
 	done

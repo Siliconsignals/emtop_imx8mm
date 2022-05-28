@@ -9,21 +9,14 @@
 	status = "okay";
 };
 
-&mipi_dsi {
-    status = "okay";
+&display_timings {
+	native-mode = <&timing0>;		/* 1080p */
+};
 
-    panel@0 {
-        compatible = "ronbo,rb070d30";
-        reg = <0>;
-        vcc-lcd-supply = <&dummy_reg>;
-        backlight = <&backlight_pwm>;
-        status = "disabled";
-    };
+&panel_ek79007 {
+	status = "disabled";
+};
 
-    port@1 {
-        mipi_dsi_hdmi_out: endpoint {
-            remote-endpoint = <&lt8912_1_in>;
-            attach-bridge;
-        };
-    };
+&panel_hdmi {
+	status = "okay";
 };

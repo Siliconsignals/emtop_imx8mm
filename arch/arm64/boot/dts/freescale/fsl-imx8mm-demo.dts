@@ -52,6 +52,12 @@
 			linux,default-trigger = "heartbeat";
 		};
 
+		D55 {
+			label = "D55";
+			gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "none";
+		};
+
 		canbus_reset {
 			label = "canbus_reset";
 			gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
@@ -483,10 +489,22 @@
 		reg = <0x41>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_touch>;
-		reset-gpio = <&gpio3 21 GPIO_ACTIVE_LOW>;
+		reset-gpio = <&gpio5 9 GPIO_ACTIVE_LOW>;
 		interrupt-parent = <&gpio3>;
 		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
 		interrupt-names = "touch-irq";
+		status = "okay";
+	};
+
+	touch@48 {
+		compatible = "ti,tsc2007";
+		reg = <0x48>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_touch>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <25 IRQ_TYPE_NONE>;
+		gpios = <&gpio3 25 GPIO_ACTIVE_LOW>;
+		ti,x-plate-ohms = <660>;
 		status = "okay";
 	};
 };
@@ -689,6 +707,7 @@
 	pinctrl_gpio_led: gpioledgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_READY_B_GPIO3_IO16		0x19
+			MX8MM_IOMUXC_SAI5_RXD0_GPIO3_IO21			0x19
 			MX8MM_IOMUXC_GPIO1_IO15_GPIO1_IO15			0x19	/* canbus_reset */
 			MX8MM_IOMUXC_SAI3_RXC_GPIO4_IO29			0x19	/* beep */
 		>;
@@ -731,7 +750,7 @@
 
 	pinctrl_touch: touchgrp {
 		fsl,pins = <
-			MX8MM_IOMUXC_SAI5_RXD0_GPIO3_IO21			0x19
+			MX8MM_IOMUXC_ECSPI1_SS0_GPIO5_IO9			0x19
 			MX8MM_IOMUXC_SAI5_MCLK_GPIO3_IO25			0x19
 		>;
 	};
@@ -952,7 +971,7 @@
 &mipi_dsi {
 	status = "okay";
 
-	panel@0 {
+	panel_ek79007: panel@0 {
 		compatible = "ronbo,rb070d30";
 		reg = <0>;
 		vcc-lcd-supply = <&dummy_reg>;
@@ -960,7 +979,17 @@
 		status = "okay";
 	};
 
-	port@1 {
+	panel_vislcd_101hysx31p: panel@1 {
+		compatible = "bananapi,lhr050h41", "ilitek,ili9881c";
+		reg = <1>;
+		power-supply = <&dummy_reg>;
+		backlight = <&backlight_pwm>;
+		status = "disabled";
+	};
+
+	panel_hdmi: port@1 {
+		status = "disabled";
+
 		mipi_dsi_hdmi_out: endpoint {
 			remote-endpoint = <&lt8912_1_in>;
 			attach-bridge;

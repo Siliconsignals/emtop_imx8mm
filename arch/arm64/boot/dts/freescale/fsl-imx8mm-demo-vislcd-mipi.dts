@@ -5,19 +5,11 @@
 
 #include "fsl-imx8mm-demo.dts"
 
-&hdmi_bridge {
-	sink_is_lvds;
-	status = "okay";
-};
-
-&display_timings {
-	native-mode = <&timing4>;
-};
-
 &panel_ek79007 {
 	status = "disabled";
 };
 
-&panel_hdmi {
+&panel_vislcd_101hysx31p {
+	reg = <0>;
 	status = "okay";
 };
