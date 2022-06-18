@@ -123,6 +123,7 @@ struct ov5640 {
 
 	void (*io_init)(struct ov5640 *);
 	int pwn_gpio, rst_gpio;
+	enum of_gpio_flags pwn_gpio_flags;
 };
 
 struct ov5640_res {
@@ -499,9 +500,9 @@ static inline void ov5640_power_down(struct ov5640 *sensor, int enable)
 		return;
 
 	if (!enable)
-		gpio_set_value_cansleep(sensor->pwn_gpio, 0);
+		gpio_set_value_cansleep(sensor->pwn_gpio, !!(sensor->pwn_gpio_flags & OF_GPIO_ACTIVE_LOW));
 	else
-		gpio_set_value_cansleep(sensor->pwn_gpio, 1);
+		gpio_set_value_cansleep(sensor->pwn_gpio, !(sensor->pwn_gpio_flags & OF_GPIO_ACTIVE_LOW));
 
 	msleep(2);
 }
@@ -551,13 +552,13 @@ static void ov5640_reset(struct ov5640 *sensor)
 	gpio_set_value(sensor->rst_gpio, 1);
 
 	/* camera power dowmn */
-	gpio_set_value(sensor->pwn_gpio, 1);
+	gpio_set_value(sensor->pwn_gpio, !(sensor->pwn_gpio_flags & OF_GPIO_ACTIVE_LOW));
 	msleep(5);
 
 	gpio_set_value(sensor->rst_gpio, 0);
 	msleep(1);
 
-	gpio_set_value(sensor->pwn_gpio, 0);
+	gpio_set_value(sensor->pwn_gpio, !!(sensor->pwn_gpio_flags & OF_GPIO_ACTIVE_LOW));
 	msleep(5);
 
 	gpio_set_value(sensor->rst_gpio, 1);
@@ -1712,7 +1713,7 @@ static int ov5640_probe(struct i2c_client *client,
 		dev_warn(dev, "No pin available\n");
 
 	/* request power down pin */
-	sensor->pwn_gpio = of_get_named_gpio(dev->of_node, "pwn-gpios", 0);
+	sensor->pwn_gpio = of_get_named_gpio_flags(dev->of_node, "pwn-gpios", 0, &(sensor->pwn_gpio_flags));
 	if (!gpio_is_valid(sensor->pwn_gpio))
 		dev_warn(dev, "No sensor pwdn pin available");
 	else {
