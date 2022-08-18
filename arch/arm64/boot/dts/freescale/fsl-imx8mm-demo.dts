@@ -507,6 +507,20 @@
 		ti,x-plate-ohms = <660>;
 		status = "okay";
 	};
+
+	touch@5d {
+		compatible = "goodix,gt911";
+		reg = <0x5d>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_touch>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
+		irq-gpios = <&gpio3 25 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
+		touchscreen-inverted-x;
+		touchscreen-inverted-y;
+		panel_is_vislcd_070hyc530nct61;
+	};
 };
 
 &snvs_rtc {
