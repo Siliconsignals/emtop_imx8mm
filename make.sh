@@ -6,6 +6,9 @@ export CROSS_COMPILE=arm-linux-
 
 DESTDIR="/dev/shm/"
 
+to_build_modules=false
+[ "$1" = "modules" ] && to_build_modules=true
+
 build_imx8mm() {
 	SRCDTB1="arch/arm64/boot/dts/freescale/fsl-imx8mm-demo.dtb"
 	DSTDTB1="fsl-imx8mm-demo.dtb"
@@ -26,13 +29,14 @@ build_imx8mm() {
 		[ $? != 0 ] && exit 1
 	fi
     corenum=`cat /proc/cpuinfo |grep processor |wc -l`
-    if test 1; then
-        make dtbs Image -j$corenum
-        [ $? != 0 ] && exit 1
-    else
+
+    if [ "$to_build_modules" = true ]; then
         make dtbs Image modules -j$corenum
         [ $? != 0 ] && exit 1
         make INSTALL_MOD_PATH=/dev/shm/ modules_install
+    else
+        make dtbs Image -j$corenum
+        [ $? != 0 ] && exit 1
     fi
 	for d in $DESTDIR; do
 		! [ -d "$d" ] && continue
@@ -63,13 +67,14 @@ build_imx8mn() {
 		[ $? != 0 ] && exit 1
 	fi
     corenum=`cat /proc/cpuinfo |grep processor |wc -l`
-    if test ; then
-        make dtbs Image -j$corenum
-        [ $? != 0 ] && exit 1
-    else
+
+    if [ "$to_build_modules" = true ]; then
         make dtbs Image modules -j$corenum
         [ $? != 0 ] && exit 1
         make INSTALL_MOD_PATH=/dev/shm/ modules_install
+    else
+        make dtbs Image -j$corenum
+        [ $? != 0 ] && exit 1
     fi
 	for d in $DESTDIR; do
 		! [ -d "$d" ] && continue
@@ -93,13 +98,14 @@ build_imx8mp() {
 		[ $? != 0 ] && exit 1
 	fi
     corenum=`cat /proc/cpuinfo |grep processor |wc -l`
-    if test ; then
-        make dtbs Image -j$corenum
-        [ $? != 0 ] && exit 1
-    else
+
+    if [ "$to_build_modules" = true ]; then
         make dtbs Image modules -j$corenum
         [ $? != 0 ] && exit 1
         make INSTALL_MOD_PATH=/dev/shm/ modules_install
+    else
+        make dtbs Image -j$corenum
+        [ $? != 0 ] && exit 1
     fi
 	for d in $DESTDIR; do
 		! [ -d "$d" ] && continue
